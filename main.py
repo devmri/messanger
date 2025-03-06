@@ -3,6 +3,7 @@ from utils import send_message, load_ban_list, save_ban_list, remove_expired_ban
 from datetime import datetime, timedelta
 import json
 import logging
+import os  # Add this import
 
 # Setup logging
 logging.basicConfig(
@@ -23,8 +24,8 @@ def verify_webhook():
 
     if mode and token:
         if mode == 'subscribe' and token == os.getenv('FB_VERIFY_TOKEN'):
-            return challenge
-        return 'Forbidden', 403
+            return str(challenge)  # Convert challenge to string
+    return 'Forbidden', 403
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
