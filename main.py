@@ -22,10 +22,27 @@ def verify_webhook():
     token = request.args.get('hub.verify_token')
     challenge = request.args.get('hub.challenge')
 
-    if mode and token:
-        if mode == 'subscribe' and token == os.getenv('FB_VERIFY_TOKEN'):
-            return str(challenge)  # Convert challenge to string
-    return 'Forbidden', 403
+    logging.info(f"Webhook verification - Mode: {mode}, Token: {token}, Challenge: {challenge}")
+    logging.info(f"Expected token: {os.getenv('FB_VERIFY_TOKEN')}")
+
+    # Check if all required parameters are present
+    if not all([mode, token, challenge]):
+        logging.error("Missing required parameters")
+        return 'Missing parameters', 400
+
+    # Verify the token
+    if token != os.getenv('FB_VERIFY_TOKEN'):
+        logging.error("Token mismatch")
+        return 'Invalid token', 403
+
+    # Verify the mode
+    if mode != 'subscribe':
+        logging.error("Invalid mode")
+        return 'Invalid mode', 403
+
+    # All checks passed, return the challenge
+    logging.info("Verification successful")
+    return challenge
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
