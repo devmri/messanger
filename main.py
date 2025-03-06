@@ -15,6 +15,18 @@ app = Flask(__name__)
 ban_list = load_ban_list()
 remove_expired_bans(ban_list)
 
+@app.route('/webhook', methods=['GET'])
+def verify_webhook() -> str:
+def verify_webhook():
+    mode = request.args.get('hub.mode')
+    token = request.args.get('hub.verify_token')
+    challenge = request.args.get('hub.challenge')
+
+    if mode and token:
+        if mode == 'subscribe' and token == os.getenv('FB_VERIFY_TOKEN'):
+            return challenge
+        return 'Forbidden', 403
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
     try:
