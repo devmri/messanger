@@ -16,7 +16,6 @@ ban_list = load_ban_list()
 remove_expired_bans(ban_list)
 
 @app.route('/webhook', methods=['GET'])
-def verify_webhook() -> str:
 def verify_webhook():
     mode = request.args.get('hub.mode')
     token = request.args.get('hub.verify_token')
